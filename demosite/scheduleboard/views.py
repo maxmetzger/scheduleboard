@@ -4,10 +4,28 @@ import logging
 from . import services, forms, models
 
 logger = logging.getLogger(__name__)
+"""
+This class contains a single view - the view used to display the schedule board.
+"""
 
 
 # Create your views here.
 def index(request):
+    """
+    To display the schedule board, we perform a few simple steps.
+
+    1. Did the user select a station from the drop-down menu? If so, use that station.
+    Otherwise, default to South Station.
+
+    2. Get the schedules, routes, and predictions for the station, starting at time now.
+
+    3. Create the station form, with the initial selection corresponding to the station selected during step 1.
+
+    4. Render the template.
+
+    :param request:
+    :return:
+    """
 
     station_key = models.STATION_CHOICES[0][0]
     logger.debug(f"POST contents were {request.POST}")

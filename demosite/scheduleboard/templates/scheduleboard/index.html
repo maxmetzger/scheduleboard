@@ -1,3 +1,10 @@
+<!-- This template renders a schedule board.
+The board is split into two main areas:
+1) Header - A header div that includes date, current station, time, and controls to change
+stations and to filter the schedules shown by vehicle type. Changing stations is done through Django, filtering is
+done through a simple javascript script.
+2) Schedule - a div that contains a table of all returned schedules and their route/prediction information.
+-->
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'scheduleboard/style.css' %}">
 

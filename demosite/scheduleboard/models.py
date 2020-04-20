@@ -2,10 +2,14 @@ from django.db import models
 
 
 # Create your models here.
+"""
+The models included in this file are not managed by Django; for a simple demo app we don't need to cache anything in
+our own database. For a larger site with many users, we would want to cache our Schedule, Route, and Prediction objects
+to keep from hitting the MBTA API too frequently. 
+"""
 
-"""
-A simple enumeration of stations that the user can switch between.
-"""
+#A simple enumeration of stations that the user can switch between. This can easily be extended if you know the station IDs you want to add, just add more (station_id, station_name) pairs.
+
 STATION_CHOICES = (
     ('place-sstat', 'South Station'),
     ('place-north', 'North Station')
@@ -13,6 +17,11 @@ STATION_CHOICES = (
 
 
 def get_station_display_name(station_key):
+    """
+    Given a station_key, find the corresponding station_name from STATION_CHOICES
+    :param station_key: a key, taken from STATION_CHOICES
+    :return: the corresponding station name, or None if station_key is not in STATION_CHOICES
+    """
     for station in STATION_CHOICES:
         if station[0] == station_key:
             return station[1]
@@ -21,6 +30,11 @@ def get_station_display_name(station_key):
 
 
 class Schedule:
+    """
+    A class that wraps the MBTA Schedule returned from https://api-v3.mbta.com/schedules.
+    Only fields relevant to the schedule board are stored in this class.
+    See https://api-v3.mbta.com/docs/swagger/index.html#/Schedule for more information.
+    """
     managed = False #technically not needed as this class does not extend models.Model, included for clarity
     id = 0
     arrival_time = None
@@ -58,22 +72,38 @@ class Schedule:
         return f"Schedule({self.id}|{self.arrival_time}|{self.departure_time})"
 
     def get_scheduled_time(self):
+        """
+        Gets the time to display. https://api-v3.mbta.com/ often returns only one time.
+        :return: departure_time if available, otherwise arrival_time.
+        """
         if self.departure_time:
             return self.departure_time
         else:
             return self.arrival_time
 
     def get_status(self):
+        """
+        Convenience method to get the status from a prediction, if a prediction exists for this object.
+        :return: The prediction's status if available, otherwise an empty string.
+        """
         if self.prediction:
             return self.prediction.get_status()
         else:
             return ""
 
     def get_destination(self):
+        """
+        Convenience method to get the destination from a route.
+        :return: the route's final destination.
+        """
         return self.route.get_destination(self.direction_id)
 
 
 class Route:
+    """
+    A class that wraps the MBTA route, see https://api-v3.mbta.com/docs/swagger/index.html#/Route for more information.
+    Only fields relevant to the schedule board are stored within this class.
+    """
     managed = False
     id = None
     color = None
@@ -106,9 +136,18 @@ class Route:
         self.route_type = rt
 
     def get_destination(self, dir_id):
+        """
+        Gets the corresponding destination name for a given direction id.
+        :param dir_id: The direction id, typically found within a Schedule.
+        :return: the corresponding destination string for the given direction id
+        """
         return self.dir_destinations[dir_id]
 
     def get_name(self):
+        """
+        Returns a display name for this route. Not all routes have short and long names (such as the Red Line.)
+        :return: defaults to the short_name if present, otherwise the long_name is returned.
+        """
         if self.short_name:
             return self.short_name
         else:
@@ -116,6 +155,10 @@ class Route:
 
 
 class Prediction:
+    """
+    A class that wraps a prediction from the MBTA APi.
+    See https://api-v3.mbta.com/docs/swagger/index.html#/Prediction for more information.
+    """
     managed = False
     id = None
     arrival_time = None
@@ -134,6 +177,10 @@ class Prediction:
             self.status = s
 
     def get_display_time(self):
+        """
+        Gets the appropriate time to display. See https://www.mbta.com/developers/v3-api/best-practices for more information.
+        :return: arrival_time if present, otherwise departure_time
+        """
         if self.arrival_time:
             return self.arrival_time
         else:
