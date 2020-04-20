@@ -26,11 +26,11 @@ def fix_UTC_offset(date_string):
 
     See https://stackoverflow.com/questions/30999230/how-to-parse-timezone-with-colon for an example.
 
-    :param date_string: a datestring of the format "%Y-%m-%dT%H:%M:%S%z"
-    :return: the colon in the UTC offset removed.
+    :param date_string: a date string of the format "%Y-%m-%dT%H:%M:%S%z"
+    :return: No return, the date string is fixed inline
     """
     if ":" == date_string[-3:-2]:
-        date_string = date_string[:-3] + d[-2:]
+        date_string = date_string[:-3] + date_string[-2:]
 
 def create_schedule(json, routes, predictions):
     """
