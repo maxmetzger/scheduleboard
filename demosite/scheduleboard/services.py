@@ -14,6 +14,23 @@ logger = logging.getLogger(__name__)
 # This is how the MBTA API currently returns all datetime values.
 mbta_datetime_format = "%Y-%m-%dT%H:%M:%S%z"
 
+def fix_UTC_offset(date_string):
+    """
+    Python 3.6 and lower does not like when a date string has a colon in the UTC offset, such as
+    2020-04-20T23:59:59-04:00
+    Intead, Pyton 3.6 and lower needs the colon removed:
+     2020-04-20T23:59:59-0400
+
+    We can fix this easily by simply removing the colon if it exists.
+    (Python 3.7 and later does not have this issue.)
+
+    See https://stackoverflow.com/questions/30999230/how-to-parse-timezone-with-colon for an example.
+
+    :param date_string: a datestring of the format "%Y-%m-%dT%H:%M:%S%z"
+    :return: the colon in the UTC offset removed.
+    """
+    if ":" == date_string[-3:-2]:
+        date_string = date_string[:-3] + d[-2:]
 
 def create_schedule(json, routes, predictions):
     """
@@ -29,9 +46,11 @@ def create_schedule(json, routes, predictions):
         assert (element["type"] == "schedule")  # here we check to ensure we're not parsing the wrong JSON
         arrival_time = element["attributes"]["arrival_time"]
         if arrival_time:
+            fix_UTC_offset(arrival_time)
             arrival_time = datetime.strptime(arrival_time, mbta_datetime_format)
         departure_time = element["attributes"]["departure_time"]
         if departure_time:
+            fix_UTC_offset(departure_time)
             departure_time = datetime.strptime(departure_time, mbta_datetime_format)
         direction = element["attributes"]["direction_id"]
         route_id = element["relationships"]["route"]["data"]["id"]
@@ -79,9 +98,11 @@ def create_prediction(json):
     pid = json["id"]
     at = json["attributes"]["arrival_time"]
     if at:
+        fix_UTC_offset(at)
         at = datetime.strptime(at, mbta_datetime_format)
     dt = json["attributes"]["departure_time"]
     if dt:
+        fix_UTC_offset(dt)
         dt = datetime.strptime(dt, mbta_datetime_format)
     di = json["attributes"]["direction_id"]
     s = json["attributes"]["status"]
