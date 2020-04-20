@@ -1,0 +1,90 @@
+* {
+ font-size: 100%;
+ font-family: "Andale Mono", Courier, monospace;
+}
+
+html {
+ background-color: black;
+ }
+
+#header {
+ top: 0;
+ width: 100%; /* increasing width from 210 to 216 because your border takes 6 extra px*/
+ color: grey;
+ background-color: black;
+ position: sticky;
+}
+
+.date_display {
+  margin: 0px; /* remove all margins to fit two divs in the container */
+  display: inline-block; /* display block elements in one line */
+  width: 20%;
+  text-align: left;
+  color: gold;
+  float: left;
+}
+
+.title_display {
+  margin: 0px;
+  display: inline-block;
+  width: 60%;
+  text-align: center;
+  font-weight: 900;
+  font-size: 30px;
+}
+
+.title_display form {
+ font-size: 10px;
+}
+
+.time_display {
+  margin: 0px;
+  display: inline-block;
+  width: 20%;
+  text-align: right;
+  color: gold;
+  float: right;
+}
+
+.time_display form {
+ text-align: left;
+}
+
+#schedule_div {
+  margin: auto;
+  width: 80%;
+  margin-top: 20px;
+}
+
+.schedule_table {
+  border-collapse: separate;
+  border-spacing: 0px;
+  margin: auto;
+  color: gold;
+}
+
+.schedule_table tr {
+  border: 1px solid #333333;
+}
+
+.schedule_table th {
+  background: black;
+  border: 1px solid #333333;
+  color: grey;
+  position: sticky;
+  top: 0;
+  padding: 10px;
+  height: 50px;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+
+}
+.schedule_table th:first-child,
+.schedule_table td:first-child {
+    border-left: 1px solid #333333;
+}
+
+.schedule_table td {
+  border-bottom: 1px solid #333333;
+  border-right: 1px solid #333333;
+  padding: 10px;
+}

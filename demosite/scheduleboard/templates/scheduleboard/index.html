@@ -1,0 +1,48 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'scheduleboard/style.css' %}">
+
+<div id="header"><span class="date_display">{{current_datetime|date:'l'}}<BR>{{current_datetime|date:'n-j-Y'}}</span>
+    <span class="title_display">{{station_display_name}} Information<br>
+        <form id="station_form" action="station" method="post">{% csrf_token %}{{ station_form }}</form>
+    </span>
+    <div class="time_display">CURRENT TIME<br>{{current_datetime|date:'g:i A'}}<br>
+    <form class="route_type_form">
+        <input type="checkbox" id="streetcar" name="streetcar" value="route_type_0" onclick="updateRows(this);" autocomplete="off" checked>
+        <label for="subway">Streetcar</label><br>
+        <input type="checkbox" id="subway" name="subway" value="route_type_1" onclick="updateRows(this);" autocomplete="off" checked>
+        <label for="subway">Subway</label><br>
+        <input type="checkbox" id="rail" name="rail" value="route_type_2" onclick="updateRows(this);" autocomplete="off" checked>
+        <label for="rail">Commuter Rail</label><br>
+        <input type="checkbox" id="bus" name="bus" value="route_type_3" onclick="updateRows(this);" autocomplete="off" checked>
+        <label for="rail">Bus</label><br>
+        <script>
+            function updateRows(box) {
+                rows = document.getElementsByClassName(box.value)
+                for(var i = 0; i < rows.length; i++){
+                    rows[i].style.display = box.checked ? "" : "none";
+                }
+            }
+        </script>
+    </form></div>
+</div>
+<div id="schedule_div">
+{% if schedule %}
+    <table class="schedule_table">
+        <tr><th>Scheduled Time</th><th>Predicted Time</th><th>Line</th><th>Destination</th><th>Status</th></tr>
+    {% for s in schedule %}
+        <tr class="route_type_{{s.route.route_type}}">
+            <td>{{ s.get_scheduled_time|date:'g:i A' }}</td> <!-- scheduled time -->
+            <td>{% if s.prediction %}
+                    {{ s.prediction.get_display_time|date:'g:i A'}}
+                {% endif %}
+            </td> <!-- predicted time -->
+            <td style="color:{{s.route.text_color}}" bgcolor="{{s.route.color}}">{{s.route.get_name}}</td> <!-- Line -->
+            <td style="color:{{s.route.text_color}}" bgcolor="{{s.route.color}}">{{s.get_destination}}</td> <!-- Destination -->
+            <td>{{ s.get_status }}</td> <!-- status -->
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No schedule is available.</p>
+{% endif %}
+</div>
